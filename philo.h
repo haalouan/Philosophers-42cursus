@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/03/21 03:20:24 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/03/23 02:14:18 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,34 +24,30 @@
 
 typedef struct s_philo
 {
-    int         id;
-    long        nbr_meals;
-    long        max_meals;
-    int full;
-    long        time_last_meal;
-    pthread_mutex_t     left_fork;
-    pthread_mutex_t       right_fork;  // dyalo
-    pthread_t   thread; //thread
-    int meals_counter;
-    struct s_table    *table;
-    int is_dead;
+    int             id;
+    long            nbr_meals;
+    int             meals_counter;
+    long            time_last_meal;
+    pthread_mutex_t left_fork; //dyal sahbo
+    pthread_mutex_t right_fork;  // dyalo
+    pthread_t       thread; //thread
+    struct s_table  *table;
 }               t_philo;
 
 typedef struct s_table
 {
-    long    philo_nbr;
+    long            philo_nbr;
     //
-    long    time_to_eat;
-    long    time_to_die;
-    long    time_to_sleep;
-    long    nbr_limit_meals;
+    long            time_to_eat;
+    long            time_to_die;
+    long            time_to_sleep;
+    long            max_meals;
     //
+    long            start;
+    long            end;
     pthread_mutex_t *fork;
-    int     all_thread_ready;
-    long    start;
-    long    end;
-    pthread_mutex_t   *forks;//array forks
-    t_philo *philos; //array
+    pthread_mutex_t *forks;//array forks
+    t_philo         *philos; //array
 }t_table;
 
 
@@ -66,4 +62,7 @@ void	ft_putchar_fd(char c, int fd);
 void *dinner_simmulation(void *data);
 void one_philo();
 int check_end(t_philo *philo);
+int check_death(t_table *table);
+int check_max_meals(t_philo *philo);
+long gettime();
 #endif
