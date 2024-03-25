@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/03/23 02:14:18 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/03/25 07:23:48 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,11 @@ typedef struct s_table
     //
     long            start;
     long            end;
-    pthread_mutex_t *fork;
     pthread_mutex_t *forks;//array forks
     t_philo         *philos; //array
+    pthread_mutex_t write;
+    pthread_mutex_t count;
+    pthread_mutex_t lock;
 }t_table;
 
 
@@ -55,14 +57,12 @@ typedef struct s_table
 int     check_errors(int arc, char **arv);
 int     ft_strlen(const char *str);
 int     ft_atoi(const char *str);
-void    initialiser_philo(t_table *table, char **arv);
+int     handele_philos(t_table *table);
 void	ft_putstr_fd(char *s, int fd);
-int check_errors(int arc, char **arv);
+int     check_errors(int arc, char **arv);
 void	ft_putchar_fd(char c, int fd);
-void *dinner_simmulation(void *data);
-void one_philo();
-int check_end(t_philo *philo);
-int check_death(t_table *table);
-int check_max_meals(t_philo *philo);
-long gettime();
+void    *dinner_simmulation(void *data);
+int     check_death(t_table *table);
+long    gettime();
+void    ft_sleep(long time);
 #endif

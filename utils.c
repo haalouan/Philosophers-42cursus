@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:40 by haalouan          #+#    #+#             */
-/*   Updated: 2024/03/24 22:11:58 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/03/25 07:24:47 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,46 +23,127 @@ void philo_init(t_table *table) //ok
 		table->philos[i].time_last_meal = gettime();
 		table->philos[i].table = table;
 		table->philos[i].left_fork = table->forks[i];
-		table->philos[i].right_fork = table->forks[(i + 1) % table->philo_nbr];
-		// if (table->philos[i].id % 2 == 0)
-		// {
-		// 	table->philos[i].right_fork = table->forks[i];
-		// 	table->philos[i].left_fork = table->forks[(i + 1) % table->philo_nbr];
-		// }
+		table->philos[i].right_fork = table->forks[1];
+		if (table->philos[i].id % 2 == 0)
+		{
+			table->philos[i].right_fork = table->forks[i];
+			table->philos[i].left_fork = table->forks[(i + 1) % table->philo_nbr];
+		}
 		i++;
 	}
 }
 
-
-long gettime()
-{ 
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-}
-
-
-
-
 int check_death(t_table *table)
 {
-	int i;
+	int i = 0;
 
 	while (1)
 	{
 		i = 0;
 		if (table->philos[i].meals_counter > table->max_meals && table->max_meals != -1)
-			exit(0);
+			return 0;
 		while (i < table->philo_nbr)
 		{
+			pthread_mutex_lock(&table->lock);
 			if (gettime() -  table->philos[i].time_last_meal > table->time_to_die)
 			{
+				pthread_mutex_lock(&table->write);
 				printf("%ld  %d is dead\n", gettime() - table->start, table->philos[i].id);
-				exit(0);
+				return 0;
 			}
+			pthread_mutex_unlock(&table->lock);
 			i++;
 		}
 	}
+}
+
+void *dinner_simmulation(void *data)
+{
+	t_philo *philo;
+	philo = (t_philo *)data;
+	if (philo->table->philo_nbr == 1)
+	{
+		printf("%ld  %d has taking a fork\n", gettime() - philo->table->start, philo->id);
+		while(1){}
+	}
+	if (philo->id % 2 == 0)
+		ft_sleep(200);
+	while (1)
+	{
+		pthread_mutex_lock(&philo->left_fork);
+		
+		pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d has taking a fork\n", gettime() - philo->table->start, philo->id);
+		pthread_mutex_unlock(&philo->table->write);
+		
+		pthread_mutex_lock(&philo->right_fork);
+
+		pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d has taking a fork\n",  gettime() - philo->table->start, philo->id);
+		pthread_mutex_unlock(&philo->table->write);
+		
+		pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d is eating\n",  gettime() - philo->table->start, philo->id);
+		pthread_mutex_unlock(&philo->table->write);
+		
+		ft_sleep(philo->table->time_to_eat);
+		
+		pthread_mutex_lock(&philo->table->lock);
+		philo->time_last_meal = gettime();
+		pthread_mutex_unlock(&philo->table->lock);
+		
+		pthread_mutex_unlock(&philo->left_fork);
+		pthread_mutex_unlock(&philo->right_fork);
+
+		pthread_mutex_lock(&philo->table->count);
+		if (philo->table->max_meals != -1)
+			philo->meals_counter++;
+		pthread_mutex_unlock(&philo->table->count);
+		
+		pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d is sleeping\n",  gettime() - philo->table->start,  philo->id);
+		pthread_mutex_unlock(&philo->table->write);
+		
+		ft_sleep(philo->table->time_to_sleep);
+	
+		
+		pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d is thinking\n",  gettime() - philo->table->start,  philo->id);
+		pthread_mutex_unlock(&philo->table->write);
+	
+	}
+	exit (0);
+}
+
+int handele_philos(t_table *table)
+{
+	if (!table->philo_nbr)
+		exit(0);
+	int i =  0;
+	philo_init(table);
+	while (i < table->philo_nbr)
+	{
+		pthread_mutex_init(&table->forks[i], NULL);
+		i++;
+	}
+	pthread_mutex_init(&table->write, NULL);
+	pthread_mutex_init(&table->count, NULL);
+	pthread_mutex_init(&table->lock, NULL);
+	if (table->max_meals == 0)
+	{
+		ft_putstr_fd("no meals\n", 1);
+		return (0);
+	}
+	else
+	{
+		i = 0;
+		while (i < table->philo_nbr)
+		{
+			pthread_create(&table->philos[i].thread, NULL, dinner_simmulation, &table->philos[i]);
+			i++;
+		}
+	}
+	return (1);
 }
 
 void ft_sleep(long time)
@@ -74,58 +155,12 @@ void ft_sleep(long time)
 	}
 }
 
-void *dinner_simmulation(void *data)
-{
-	t_philo *philo;
-	philo = (t_philo *)data;
-	if (philo->id % 2 == 0)
-		ft_sleep(400);
-	while (1)
-	{
-		pthread_mutex_lock(&philo->left_fork);
-		pthread_mutex_lock(&philo->right_fork);
-		printf("%ld  %d has taking a fork\n", gettime() - philo->table->start, philo->id);
-		printf("%ld  %d has taking a fork\n",  gettime() - philo->table->start, philo->id);
-		printf("%ld  %d is eating\n",  gettime() - philo->table->start, philo->id);
-		philo->time_last_meal = gettime();
-		if (philo->table->max_meals != -1)
-			philo->meals_counter++;
-		ft_sleep(philo->table->time_to_eat);
-		pthread_mutex_unlock(&philo->left_fork);
-		pthread_mutex_unlock(&philo->right_fork);
-		printf("%ld  %d is sleeping\n",  gettime() - philo->table->start,  philo->id);
-		ft_sleep(philo->table->time_to_sleep);
-		printf("%ld  %d is thinking\n",  gettime() - philo->table->start,  philo->id);
-	}
-	exit (0);
+long gettime()
+{ 
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
-
-void initialiser_philo(t_table *table, char **arv)
-{
-	if (!table->philo_nbr)
-		exit(0);
-	int i =  0;
-	philo_init(table);
-	while (i++ < table->philo_nbr)
-		pthread_mutex_init(&table->forks[i], NULL);
-	if (table->max_meals == 0)
-		exit(0);
-	else if (table->philo_nbr == 1)
-		one_philo();
-	else
-	{
-		i = 0;
-		while (i < table->philo_nbr)
-		{
-			pthread_create(&table->philos[i].thread, NULL, dinner_simmulation, &table->philos[i]);
-			i++;
-		}
-	}
-}
-
-
-
-
 
 
 /**************************************/
@@ -177,11 +212,7 @@ int	ft_atoi(const char *str)
 	}
 	return (result * signe);
 }
-void one_philo()
-{
-	printf("one philo\n");
-	
-}
+
 
 int	ft_strlen(const char *str)
 {
