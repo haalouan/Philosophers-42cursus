@@ -1,8 +1,0 @@
-{
-    "C_Cpp.errorSquiggles": "disabled",
-    "files.associations": {
-        "__locale": "c",
-        "__threading_support": "c",
-        "ostream": "c"
-    }
-}

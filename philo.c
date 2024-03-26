@@ -6,20 +6,20 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:23 by haalouan          #+#    #+#             */
-/*   Updated: 2024/03/25 06:14:23 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/03/25 21:15:26 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-//void f(){system("leaks philo");}
+// void f(){system("leaks philo");}
 
 int main(int arc, char **arv)
 {
-    //atexit(f);
+    // atexit(f);
     if (check_errors(arc, arv) == 0)
     {
-        ft_putstr_fd("ERROR IN ARGS\n", 2);
+        printf("ERORR IN ARGS\n");
         return (0);
     }
     t_table *table = malloc(sizeof(t_table));
@@ -28,7 +28,7 @@ int main(int arc, char **arv)
     table->philo_nbr = ft_atoi(arv[1]);
     if (table->philo_nbr == 0)
     {
-        ft_putstr_fd("no philos\n", 1);
+        printf("no philos\n");
         return (0);
     }
     table->time_to_die = ft_atoi(arv[2]);

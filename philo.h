@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/03/25 07:23:48 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/03/25 22:39:10 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 #include <limits.h>
 
 
-
 typedef struct s_philo
 {
     int             id;
@@ -32,6 +31,7 @@ typedef struct s_philo
     pthread_mutex_t right_fork;  // dyalo
     pthread_t       thread; //thread
     struct s_table  *table;
+    long            start;
 }               t_philo;
 
 typedef struct s_table
@@ -43,7 +43,6 @@ typedef struct s_table
     long            time_to_sleep;
     long            max_meals;
     //
-    long            start;
     long            end;
     pthread_mutex_t *forks;//array forks
     t_philo         *philos; //array

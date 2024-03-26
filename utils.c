@@ -6,20 +6,20 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:40 by haalouan          #+#    #+#             */
-/*   Updated: 2024/03/25 07:24:47 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/03/26 01:54:20 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void philo_init(t_table *table) //ok
+void philo_init(t_table *table) 
 {
 	int i = 0;
 	while (i < table->philo_nbr)
 	{
 		table->philos[i].id = i + 1;
 		table->philos[i].meals_counter = 0;
-		table->start = gettime();
+		table->philos[i].start = gettime();
 		table->philos[i].time_last_meal = gettime();
 		table->philos[i].table = table;
 		table->philos[i].left_fork = table->forks[i];
@@ -40,15 +40,17 @@ int check_death(t_table *table)
 	while (1)
 	{
 		i = 0;
+		pthread_mutex_lock(&table->count);
 		if (table->philos[i].meals_counter > table->max_meals && table->max_meals != -1)
 			return 0;
+		pthread_mutex_unlock(&table->count);
 		while (i < table->philo_nbr)
 		{
 			pthread_mutex_lock(&table->lock);
 			if (gettime() -  table->philos[i].time_last_meal > table->time_to_die)
 			{
 				pthread_mutex_lock(&table->write);
-				printf("%ld  %d is dead\n", gettime() - table->start, table->philos[i].id);
+				printf("%ld  %d is dead\n", gettime() - table->philos[i].start, table->philos[i].id);
 				return 0;
 			}
 			pthread_mutex_unlock(&table->lock);
@@ -63,7 +65,7 @@ void *dinner_simmulation(void *data)
 	philo = (t_philo *)data;
 	if (philo->table->philo_nbr == 1)
 	{
-		printf("%ld  %d has taking a fork\n", gettime() - philo->table->start, philo->id);
+		printf("%ld  %d has taking a fork\n", gettime() - philo->start, philo->id);
 		while(1){}
 	}
 	if (philo->id % 2 == 0)
@@ -71,19 +73,19 @@ void *dinner_simmulation(void *data)
 	while (1)
 	{
 		pthread_mutex_lock(&philo->left_fork);
-		
-		pthread_mutex_lock(&philo->table->write);
-		printf("%ld  %d has taking a fork\n", gettime() - philo->table->start, philo->id);
-		pthread_mutex_unlock(&philo->table->write);
-		
 		pthread_mutex_lock(&philo->right_fork);
-
 		pthread_mutex_lock(&philo->table->write);
-		printf("%ld  %d has taking a fork\n",  gettime() - philo->table->start, philo->id);
-		pthread_mutex_unlock(&philo->table->write);
+		printf("%ld  %d has taking a fork\n", gettime() - philo->start, philo->id);
+		//pthread_mutex_unlock(&philo->table->write);
 		
-		pthread_mutex_lock(&philo->table->write);
-		printf("%ld  %d is eating\n",  gettime() - philo->table->start, philo->id);
+		//pthread_mutex_lock(&philo->right_fork);
+
+		//pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d has taking a fork\n",  gettime() - philo->start, philo->id);
+		//pthread_mutex_unlock(&philo->table->write);
+		
+		//pthread_mutex_lock(&philo->table->write);
+		printf("%ld  %d is eating\n",  gettime() - philo->start, philo->id);
 		pthread_mutex_unlock(&philo->table->write);
 		
 		ft_sleep(philo->table->time_to_eat);
@@ -101,14 +103,14 @@ void *dinner_simmulation(void *data)
 		pthread_mutex_unlock(&philo->table->count);
 		
 		pthread_mutex_lock(&philo->table->write);
-		printf("%ld  %d is sleeping\n",  gettime() - philo->table->start,  philo->id);
+		printf("%ld  %d is sleeping\n",  gettime() - philo->start,  philo->id);
 		pthread_mutex_unlock(&philo->table->write);
 		
 		ft_sleep(philo->table->time_to_sleep);
 	
 		
 		pthread_mutex_lock(&philo->table->write);
-		printf("%ld  %d is thinking\n",  gettime() - philo->table->start,  philo->id);
+		printf("%ld  %d is thinking\n",  gettime() - philo->start,  philo->id);
 		pthread_mutex_unlock(&philo->table->write);
 	
 	}
@@ -131,7 +133,7 @@ int handele_philos(t_table *table)
 	pthread_mutex_init(&table->lock, NULL);
 	if (table->max_meals == 0)
 	{
-		ft_putstr_fd("no meals\n", 1);
+		printf("no meals\n");
 		return (0);
 	}
 	else
@@ -211,37 +213,4 @@ int	ft_atoi(const char *str)
 		str++;
 	}
 	return (result * signe);
-}
-
-
-int	ft_strlen(const char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-	{
-		i++;
-	}
-	return (i);
-}
-
-void	ft_putstr_fd(char *s, int fd)
-{
-	if (s)
-	{
-		while (*s != '\0')
-		{
-			ft_putchar_fd(*s, fd);
-			s++;
-		}
-	}
-}
-
-void	ft_putchar_fd(char c, int fd)
-{
-	if (fd >= 0)
-	{
-		write(fd, &c, 1);
-	}
 }
