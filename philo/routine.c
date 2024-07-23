@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 17:08:36 by haalouan          #+#    #+#             */
-/*   Updated: 2024/04/14 21:07:44 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/07/22 00:06:21 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	handele_philos(t_table *table)
 	i = 0;
 	pthread_mutex_init(&table->write, NULL);
 	pthread_mutex_init(&table->count, NULL);
-	pthread_mutex_init(&table->lock, NULL);
+	pthread_mutex_init(&table->lock_time, NULL);
 	philo_init(table);
 	while (i++ < table->philo_nbr)
 		pthread_mutex_init(&table->forks[i], NULL);
@@ -50,14 +50,14 @@ int	handele_philos(t_table *table)
 	i = 0;
 	while (i < table->philo_nbr)
 	{
-		pthread_create(&table->philos[i].thread, NULL, dinner_simmulation,
+		pthread_create(&table->philos[i].thread, NULL, routine,
 			&table->philos[i]);
 		i++;
 	}
 	return (1);
 }
 
-void	*dinner_simmulation(void *data)
+void	*routine(void *data)
 {
 	t_philo	*philo;
 
@@ -73,10 +73,10 @@ void	*dinner_simmulation(void *data)
 		pthread_mutex_lock(philo->right_fork);
 		print(philo, gettime(), "has taken a fork");
 		print(philo, gettime(), "is eating");
-		ft_sleep(philo->table->time_to_eat);
-		pthread_mutex_lock(&philo->table->lock);
+		pthread_mutex_lock(&philo->table->lock_time);
 		philo->time_last_meal = gettime();
-		pthread_mutex_unlock(&philo->table->lock);
+		pthread_mutex_unlock(&philo->table->lock_time);
+		ft_sleep(philo->table->time_to_eat);
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
 		count_meals(philo);
@@ -91,7 +91,6 @@ int	check_death(t_table *table)
 	int		i;
 	long	time;
 
-	i = 0;
 	while (1)
 	{
 		i = 0;
@@ -102,15 +101,15 @@ int	check_death(t_table *table)
 		pthread_mutex_unlock(&table->count);
 		while (i < table->philo_nbr)
 		{
-			pthread_mutex_lock(&table->lock);
+			pthread_mutex_lock(&table->lock_time);
 			time = gettime() - table->philos[i].time_last_meal;
 			if (time > table->time_to_die)
 			{
 				pthread_mutex_lock(&table->write);
-				printf("%ld %d is dead\n", time, table->philos[i].id); 
+				printf("%ld %d is dead\n", time, table->philos[i].id);
 				return (0);
 			}
-			pthread_mutex_unlock(&table->lock);
+			pthread_mutex_unlock(&table->lock_time);
 			i++;
 		}
 	}

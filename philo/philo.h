@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/04/14 17:49:58 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/07/21 18:18:07 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	write;
 	pthread_mutex_t	count;
-	pthread_mutex_t	lock;
+	pthread_mutex_t	lock_time;
 }					t_table;
 
 int		check_errors(int arc, char **arv);
@@ -52,10 +52,11 @@ int		ft_atoi(const char *str);
 int		handele_philos(t_table *table);
 int		check_death(t_table *table);
 int		check_errors(int arc, char **arv);
-void	*dinner_simmulation(void *data);
+void	*routine(void *data);
 void	ft_sleep(long time);
 void	print(t_philo *philo, long time, char *WRITE);
 void	one_philo(t_philo *philo);
 void	count_meals(t_philo *philo);
 long	gettime(void);
+
 #endif
