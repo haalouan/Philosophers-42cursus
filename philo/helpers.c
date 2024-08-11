@@ -6,44 +6,45 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 17:35:58 by haalouan          #+#    #+#             */
-/*   Updated: 2024/07/24 12:39:48 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 07:18:53 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print(t_philo *philo, long time, char *WRITE)
+int	ft_strlen(char *str)
 {
-	pthread_mutex_lock(&philo->table->write);
-	printf("%ld %d %s\n", time - philo->start, philo->id, WRITE);
-	pthread_mutex_unlock(&philo->table->write);
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
 
-void	one_philo(t_philo *philo)
+int	ft_atoi(const char *str)
 {
-	printf("%ld  %d has taken a fork\n", gettime() - philo->start, philo->id);
-	while (1)
+	int		i;
+	long	nb;
+	int		sign;
+
+	i = 0;
+	nb = 0;
+	sign = 1;
+	while (str[i] == ' ' || str[i] == '\t')
+		i++;
+	if (str[i] == '-' || str[i] == '+')
 	{
+		if (str[i] == '-')
+			sign = -1;
+		i++;
 	}
-}
-
-void	count_meals(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->table->count);
-	if (philo->table->max_meals != -1)
-		philo->meals_counter++;
-	pthread_mutex_unlock(&philo->table->count);
-}
-
-void	ft_sleep(long time)
-{
-	long	start;
-
-	start = gettime();
-	while (gettime() - start < time)
+	while (str[i] >= '0' && str[i] <= '9')
 	{
-		usleep(10);
+		nb = nb * 10 + (str[i] - '0');
+		i++;
 	}
+	return (nb * sign);
 }
 
 long	gettime(void)
@@ -52,4 +53,26 @@ long	gettime(void)
 
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+int	check_errors(int arc, char **arv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	if (arc != 5 && arc != 6)
+		return (0);
+	while (i < arc)
+	{
+		j = 0;
+		while (arv[i][j] != '\0')
+		{
+			if (arv[i][j] < '0' || arv[i][j] > '9')
+				return (0);
+			j++;
+		}
+		i++;
+	}
+	return (1);
 }

@@ -1,7 +1,12 @@
 {
     "files.associations": {
         "__locale": "c",
-        "locale": "c"
+        "locale": "c",
+        "chrono": "c",
+        "unordered_map": "c",
+        "__mutex_base": "c",
+        "memory": "c",
+        "mutex": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

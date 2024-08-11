@@ -6,52 +6,93 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:23 by haalouan          #+#    #+#             */
-/*   Updated: 2024/07/24 12:54:49 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 07:23:33 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	get_ready(t_table *table)
+void	f(void)
 {
-	if (table->philo_nbr == 0)
-	{
-		printf("no philos\n");
-		return (0);
-	}
-	if (table->time_to_die == 0 || table->time_to_eat == 0
-		|| table->time_to_sleep == 0)
-	{
-		printf("Error in ARGS\n");
-		return (0);
-	}
-	return (1);
+	system("leaks philo");
 }
 
-int	main(int arc, char **arv)
+void	init_philo(t_table **table, char **av, int ac)
+{
+	(*table)->philo_nbr = ft_atoi(av[1]);
+	(*table)->time_to_die = ft_atoi(av[2]);
+	(*table)->time_to_eat = ft_atoi(av[3]);
+	(*table)->time_to_sleep = ft_atoi(av[4]);
+	if (ac == 6)
+		(*table)->max_meals = ft_atoi(av[5]);
+	else
+		(*table)->max_meals = -1;
+}
+
+int	init_malloc(t_table **table, char **av, int ac)
+{
+	*table = (t_table *)malloc(sizeof(t_table));
+	if (!(*table))
+		return (printf("Malloc failed\n"));
+	(*table)->philo = (t_philo *)malloc(sizeof(t_philo)
+			* ft_atoi(av[1]));
+	if (!(*table)->philo)
+	{
+		free((*table));
+		return (printf("Malloc failed\n"));
+	}
+	(*table)->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
+			* ft_atoi(av[1]));
+	if (!(*table)->forks)
+	{
+		free((*table)->philo);
+		free((*table));
+		return (printf("Malloc failed\n"));
+	}
+	init_philo(table, av, ac);
+	return (0);
+}
+
+int	handle_philos(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->philo_nbr)
+	{
+		table->philo[i].id = i + 1;
+		table->philo[i].meals_counter = 0;
+		table->philo[i].start = gettime();
+		table->philo[i].last_eat = gettime();
+		table->philo[i].right_fork = &table->forks[(i + 1) % table->philo_nbr];
+		table->philo[i].left_fork = &table->forks[i];
+		table->philo[i].table = table;
+		i++;
+	}
+	if (init_mutex(table))
+		return (1);
+	if (create_threads(table) == 1)
+		return (1);
+	return (0);
+}
+
+int	main(int ac, char **av)
 {
 	t_table	*table;
 
-	if (check_errors(arc, arv) == 0)
+	// atexit(f);
+	if (check_errors(ac, av) == 0)
 	{
 		printf("ERORR IN ARGS\n");
 		return (0);
 	}
-	table = malloc(sizeof(t_table));
-	table->philos = malloc(sizeof(t_philo) * ft_atoi(arv[1]));
-	table->forks = malloc(ft_atoi(arv[1]));
-	table->philo_nbr = ft_atoi(arv[1]);
-	table->time_to_die = ft_atoi(arv[2]);
-	table->time_to_eat = ft_atoi(arv[3]);
-	table->time_to_sleep = ft_atoi(arv[4]);
-	if (arv[5] != NULL)
-		table->max_meals = ft_atoi(arv[5]);
-	else
-		table->max_meals = -1;
-	if (get_ready(table) == 0)
-		return (0);
-	if (handele_philos(table) == 0)
-		return (0);
-	if (check_death(table) == 0)
-		return (0);
+	if (init_malloc(&table, av, ac))
+		return (1);
+	if (handle_philos(table) == 1)
+	{
+		destroy_mutex(table, 1);
+		return (1);
+	}
+	destroy_mutex(table, 1);
+	return (0);
 }

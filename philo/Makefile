@@ -1,9 +1,9 @@
-SRCS =	philo.c check_errors.c routine.c helpers.c
+SRCS =	philo.c utils_philo.c routine.c helpers.c
 OBJS = ${SRCS:.c=.o}
 NAME = philo
 CC = cc
 RM = rm -f
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror #-g -fsanitize=thread
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)  
