@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/11 07:23:42 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 10:36:03 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct s_table
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			max_meals;
+	long			start;
 	pthread_mutex_t	*forks;
 	t_philo			*philo;
 }	t_table;

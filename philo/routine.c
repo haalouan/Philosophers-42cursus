@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 17:08:36 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/11 07:25:08 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 12:14:19 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	check_death(t_table *table)
 		while (i < table->philo_nbr)
 		{
 			pthread_mutex_lock(&table->philo[i].table->meals_mutex);
-			if (gettime() - table->philo[i].last_eat > table->time_to_die)
+			if (gettime() - table->philo[i].last_eat >= table->time_to_die)
 			{
 				pthread_mutex_lock(&table->philo[i].table->write);
 				printf("%ld %d died\n", gettime() - table->philo[i].start,
@@ -62,7 +62,6 @@ int	check_death(t_table *table)
 			pthread_mutex_unlock(&table->philo[i].table->meals_mutex);
 			i++;
 		}
-		// usleep(50);
 	}
 	return (1);
 }
@@ -96,13 +95,14 @@ int	init_forks(t_table *table)
 	int	i;
 
 	i = 0;
-	while (i++ < table->philo_nbr)
+	while (i < table->philo_nbr)
 	{
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
 		{
 			printf("pthread_mutex_init failed\n");
 			return (1);
 		}
+		i++;
 	}
 	return (0);
 }

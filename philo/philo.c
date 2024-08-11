@@ -6,16 +6,11 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:23 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/11 07:23:33 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 12:20:25 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	f(void)
-{
-	system("leaks philo");
-}
 
 void	init_philo(t_table **table, char **av, int ac)
 {
@@ -27,6 +22,7 @@ void	init_philo(t_table **table, char **av, int ac)
 		(*table)->max_meals = ft_atoi(av[5]);
 	else
 		(*table)->max_meals = -1;
+	(*table)->start = gettime();
 }
 
 int	init_malloc(t_table **table, char **av, int ac)
@@ -62,7 +58,7 @@ int	handle_philos(t_table *table)
 	{
 		table->philo[i].id = i + 1;
 		table->philo[i].meals_counter = 0;
-		table->philo[i].start = gettime();
+		table->philo[i].start = table->start;
 		table->philo[i].last_eat = gettime();
 		table->philo[i].right_fork = &table->forks[(i + 1) % table->philo_nbr];
 		table->philo[i].left_fork = &table->forks[i];
@@ -80,7 +76,6 @@ int	main(int ac, char **av)
 {
 	t_table	*table;
 
-	// atexit(f);
 	if (check_errors(ac, av) == 0)
 	{
 		printf("ERORR IN ARGS\n");
