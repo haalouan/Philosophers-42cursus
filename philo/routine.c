@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 17:08:36 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/11 12:14:19 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:33:57 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,64 +66,25 @@ int	check_death(t_table *table)
 	return (1);
 }
 
-int	init_mutex(t_table *table)
-{
-	int	i;
-
-	i = 0;
-	if (pthread_mutex_init(&table->write, NULL) != 0)
-	{
-		printf("pthread_mutex_init failed\n");
-		return (1);
-	}
-	if (pthread_mutex_init(&table->meals_mutex, NULL) != 0)
-	{
-		printf("pthread_mutex_init failed\n");
-		return (1);
-	}
-	if (pthread_mutex_init(&table->counter_mutex, NULL) != 0)
-	{
-		printf("pthread_mutex_init failed\n");
-		return (1);
-	}
-	init_forks(table);
-	return (0);
-}
-
-int	init_forks(t_table *table)
+int	handle_philos(t_table *table)
 {
 	int	i;
 
 	i = 0;
 	while (i < table->philo_nbr)
 	{
-		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-		{
-			printf("pthread_mutex_init failed\n");
-			return (1);
-		}
+		table->philo[i].id = i + 1;
+		table->philo[i].meals_counter = 0;
+		table->philo[i].start = table->start;
+		table->philo[i].last_eat = gettime();
+		table->philo[i].right_fork = &table->forks[(i + 1) % table->philo_nbr];
+		table->philo[i].left_fork = &table->forks[i];
+		table->philo[i].table = table;
 		i++;
 	}
-	return (0);
-}
-
-int	create_threads(t_table *table)
-{
-	int	i;
-
-	i = 0;
-	while (i < table->philo_nbr)
-	{
-		if (pthread_create(&table->philo[i].thread, NULL, routine,
-				&table->philo[i]))
-		{
-			printf("pthread_create failed\n");
-			return (1);
-		}
-		pthread_detach(table->philo[i].thread);
-		i++;
-	}
-	if (check_death(table) == 1)
+	if (init_mutex(table))
+		return (1);
+	if (create_threads(table) == 1)
 		return (1);
 	return (0);
 }

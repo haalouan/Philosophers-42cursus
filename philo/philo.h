@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/11 10:36:03 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/11 14:31:00 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void	ft_sleep(int duration);
 int		destroy_mutex(t_table *table, int i);
 int		check_death(t_table *table);
 int		ft_atoi(const char *str);
-int		ft_error(char *str);
 int		handle_philos(t_table *table);
 void	*routine(void *arg);
 long	gettime(void);
@@ -62,4 +61,5 @@ int		init_mutex(t_table *table);
 int		init_forks(t_table *table);
 void	count_meals(t_philo *philo);
 void	init_philo(t_table **table, char **av, int ac);
+int		init_malloc(t_table **table, char **av, int ac);
 #endif

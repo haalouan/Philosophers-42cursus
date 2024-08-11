@@ -1,4 +1,4 @@
-SRCS =	philo.c utils_philo.c routine.c helpers.c
+SRCS =	philo.c utils_philo.c routine.c helpers.c init_philos.c
 OBJS = ${SRCS:.c=.o}
 NAME = philo
 CC = cc
