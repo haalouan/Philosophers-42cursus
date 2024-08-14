@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:05:11 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/14 09:26:30 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/14 18:24:57 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ typedef struct s_table
 	t_philo			*philo;
 }	t_table;
 
-int		check_meals(t_philo *philo, int max_meals);
+int		check_meals(t_philo *philo);
+void	count_meals(t_philo *philo);
 void	ft_sleep(int duration);
 int		destroy_mutex(t_table *table, int i);
 int		check_death(t_table *table);
@@ -58,7 +59,6 @@ void	print(t_philo *philo, char *str);
 int		check_errors(int arc, char **arv);
 int		init_mutex(t_table *table);
 int		init_forks(t_table *table);
-void	count_meals(t_philo *philo);
 void	init_philo(t_table **table, char **av, int ac);
 int		init_malloc(t_table **table, char **av, int ac);
 #endif

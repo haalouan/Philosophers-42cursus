@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/14 17:08:36 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/14 10:05:19 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/14 18:25:23 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	*routine(void *arg)
 		ft_sleep(philo->table->time_to_eat);
 		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_unlock(philo->left_fork);
-		philo->meals_counter += 1;
+		count_meals(philo);
 		print(philo, "is sleeping\n");
 		ft_sleep(philo->table->time_to_sleep);
 		print(philo, "is thinking\n");
@@ -48,6 +48,8 @@ int	check_death(t_table *table)
 	while (1)
 	{
 		i = 0;
+		if (check_meals(&table->philo[i]) == 1)
+			break ;
 		while (i < table->philo_nbr)
 		{
 			pthread_mutex_lock(&table->philo[i].table->meals_mutex);

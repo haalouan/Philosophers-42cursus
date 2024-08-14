@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:40 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/14 09:44:42 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/14 18:25:17 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,21 @@ void	ft_sleep(int duration)
 	{
 		usleep(100);
 	}
+}
+
+void	count_meals(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->table->counter_mutex);
+	philo->meals_counter += 1;
+	pthread_mutex_unlock(&philo->table->counter_mutex);
+}
+
+int	check_meals(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->table->counter_mutex);
+	if (philo->meals_counter >= philo->table->max_meals
+		&& philo->table->max_meals != -1)
+		return (1);
+	pthread_mutex_unlock(&philo->table->counter_mutex);
+	return (0);
 }
