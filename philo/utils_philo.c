@@ -6,7 +6,7 @@
 /*   By: haalouan <haalouan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/04 02:06:40 by haalouan          #+#    #+#             */
-/*   Updated: 2024/08/11 14:22:49 by haalouan         ###   ########.fr       */
+/*   Updated: 2024/08/14 09:44:42 by haalouan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	destroy_mutex(t_table *table, int i)
 void	print(t_philo *philo, char *str)
 {
 	pthread_mutex_lock(&philo->table->write);
-	printf("%ld %d %s", gettime() - philo->start, philo->id, str);
+	printf("%ld %d %s", gettime() - philo->table->start, philo->id, str);
 	pthread_mutex_unlock(&philo->table->write);
 }
 
@@ -49,25 +49,6 @@ void	ft_sleep(int duration)
 	time_start = gettime();
 	while (gettime() - time_start < duration)
 	{
-		usleep(10);
+		usleep(100);
 	}
-}
-
-int	check_meals(t_philo *philo, int max_meals)
-{
-	pthread_mutex_lock(&philo->table->counter_mutex);
-	if (philo->meals_counter >= max_meals && max_meals != -1)
-	{
-		pthread_mutex_unlock(&philo->table->counter_mutex);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->table->counter_mutex);
-	return (0);
-}
-
-void	count_meals(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->table->counter_mutex);
-	philo->meals_counter += 1;
-	pthread_mutex_unlock(&philo->table->counter_mutex);
 }
